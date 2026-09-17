@@ -160,5 +160,5 @@ app.add_handler(
 app.add_handler(CallbackQueryHandler(button))
 
 print("Bot is running...")
+app.run_polling(stop_signals=None, close_loop=False)
 
-app.run_polling()
