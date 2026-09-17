@@ -9,7 +9,7 @@ from telegram.ext import (
 )
 
 # حطي هنا التوكن الجديد من BotFather
-TOKEN ="8708373953:AAE1dFhswk54tiFWNr-VI3G_4k_w5tPUWRE"
+TOKEN ="8837641175:AAG06ZQrdVWf3aScyJ02MUt_2D-HzuzUix0"
 
 # اسم قناتك
 CHANNEL = "@offresAliexpressDZ2025"
