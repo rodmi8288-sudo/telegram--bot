@@ -1,206 +1,47 @@
+
+
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    MessageHandler,
-    CallbackQueryHandler,
-    ContextTypes,
-    filters,
-)
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, ContextTypes
+import re
 
-# =========================
-# توكن البوت
-# =========================
+# ========== حط التوكن الجديد هنا ==========
 TOKEN = "8837641175:AAG06ZQrdVWf3aScyJ02MUt_2D-HzuzUix0"
-
-# =========================
-# اسم القناة
-# =========================
 CHANNEL = "@offresAliexpressDZ2025"
+# =========================================
 
+def get_keyboard(link):
+    return InlineKeyboardMarkup([
+        [InlineKeyboardButton("🛒 اطلب الآن", url=link)],
+        [InlineKeyboardButton("📢 قناتنا", url="https://t.me/offresAliexpressDZ2025")]
+    ])
 
-# =========================
-# الأزرار
-# =========================
-def get_keyboard():
-
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                "⭐ مراجعة وجمع النقاط يوميا ⭐",
-                callback_data="points"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "💸 تخفيض العملات على منتجات السلة 💸",
-                callback_data="coins"
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                "❤️ اشترك في القناة للمزيد من العروض ❤️",
-                callback_data="channel"
-            )
-        ],
-    ]
-
-    return InlineKeyboardMarkup(keyboard)
-
-
-# =========================
-# أمر Start
-# =========================
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("مرحبا ❤️ ابعثلي رابط AliExpress")
 
-    await update.message.reply_text(
-        "مرحبا بك ❤️\n\n"
-        "📦 ابعثلي رابط منتج من AliExpress\n"
-        "وسأقوم بتحضير العرض ونشره في القناة 🔥",
-        reply_markup=get_keyboard()
-    )
-
-
-# =========================
-# استقبال الرسائل والروابط
-# =========================
 async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
     if not update.message or not update.message.text:
         return
-
     text = update.message.text.strip()
-
-    # التأكد من رابط AliExpress
     if "aliexpress.com" not in text.lower():
-
-        await update.message.reply_text(
-            "❌ هذا ليس رابط AliExpress.\n\n"
-            "📦 ابعثلي رابط المنتج من AliExpress."
-        )
+        await update.message.reply_text("❌ هذا ليس رابط AliExpress\nابعثلي رابط منتج صحيح")
         return
 
-    # =========================
-    # إنشاء نص العرض
-    # =========================
-    message = (
-        "🔥 عرض جديد من AliExpress 🔥\n\n"
+    m = re.search(r'/item/(\d+)', text)
+    pid = m.group(1) if m else "0"
+    aff = f"https://s.click.aliexpress.com/e/_{pid}"
 
-        "💰 عرض بين الأسعار والعملات:\n"
-        f"🔗 {text}\n\n"
+    msg = f"🔥 عرض جديد 🔥\n\n{aff}\n\n#Aliexpress_DZ"
 
-        "📦 عرض الحزمة:\n"
-        f"🔗 {text}\n\n"
+    await context.bot.send_message(chat_id=CHANNEL, text=msg, reply_markup=get_keyboard(aff))
+    await update.message.reply_text(f"✅ تم النشر في {CHANNEL}\n{aff}")
 
-        "💎 عرض السوبر:\n"
-        f"🔗 {text}\n\n"
-
-        "🔥 عرض محدود:\n"
-        f"🔗 {text}\n\n"
-
-        "❤️ لا تفوتي العرض!\n\n"
-        "#AliExpress"
-    )
-
-    markup = get_keyboard()
-
-    # =========================
-    # نشر في القناة
-    # =========================
-    try:
-
-        await context.bot.send_message(
-            chat_id=CHANNEL,
-            text=message,
-            reply_markup=markup,
-            disable_web_page_preview=False
-        )
-
-        # =========================
-        # الرد على الشخص داخل البوت
-        # =========================
-        await update.message.reply_text(
-            "✅ تم نشر العرض بنجاح في القناة ❤️\n\n"
-            + message,
-            reply_markup=markup,
-            disable_web_page_preview=False
-        )
-
-        print("تم نشر العرض بنجاح ✅")
-
-    except Exception as e:
-
-        print("ERROR:", e)
-
-        await update.message.reply_text(
-            "❌ ما قدرتش ننشر العرض في القناة.\n\n"
-            "تأكدي أن البوت مضاف كمسؤول فيرسائل."
-        )
-
-
-# =========================
-# التعامل مع الأزرار
-# =========================
-async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    query = update.callback_query
-
-    await query.answer()
-
-    if query.data == "points":
-
-        await query.message.reply_text(
-            "⭐ مراجعة وجمع النقاط يوميا ⭐\n\n"
-            "يمكنك مراجعة النقاط يوميا والاستفادة من التخفيضات."
-        )
-
-    elif query.data == "coins":
-
-        await query.message.reply_text(
-            "💸 تخفيض العملات على منتجات السلة 💸\n\n"
-            "أرسل رابط منتج AliExpress وسأساعدك في نشر العرض."
-        )
-
-    elif query.data == "channel":
-
-        await query.message.reply_text(
-            "❤️ اشترك في القناة للمزيد من العروض ❤️\n\n"
-            "📢 @offresAliexpressDZ2025"
-        )
-
-
-# =========================
-# تشغيل البوت
-# =========================
 def main():
-
     print("جاري تشغيل البوت...")
-
     app = Application.builder().token(TOKEN).build()
-
-    app.add_handler(
-        CommandHandler("start", start)
-    )
-
-    app.add_handler(
-        MessageHandler(
-            filters.TEXT & ~filters.COMMAND,
-            reply
-        )
-    )
-
-    app.add_handler(
-        CallbackQueryHandler(button)
-    )
-
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply))
     print("Bot is running...")
-
     app.run_polling()
 
-
-# =========================
-# البداية
-# =========================
 if __name__ == "__main__":
     main()
-
