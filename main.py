@@ -35,12 +35,12 @@ async def reply(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await context.bot.send_message(chat_id=CHANNEL, text=msg, reply_markup=get_keyboard(aff))
     await update.message.reply_text(f"✅ تم النشر في {CHANNEL}\n{aff}")
 
+def mimport asyncio
+
 def main():
-    print("جاري تشغيل البوت...")
-    app = Application.builder().token(TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, reply))
-    print("Bot is running...")
+    # ... الكود تاعك يبقى نفسه
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
     app.run_polling()
 
 if __name__ == "__main__":
